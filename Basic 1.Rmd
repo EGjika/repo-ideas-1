@@ -1,0 +1,150 @@
+---
+title: "Basic 1"
+author: "Eralda Gjika"
+date: "9/15/2021"
+output: html_document
+---
+
+# Examples
+First importing some data from existing datasets in R (here I will use iris dataset)
+```{r}
+head(iris) # this will give us a view of the dataframe iris
+str(iris)# this will give us the structure of the dataframe
+```
+
+# Example
+```{r}
+n = 50
+x = 1:n
+y = rnorm(n,10+2*x, 20)
+z = rnorm(n, 5+3*x, 10)
+Categors = rep(c("E","D","C","B","A"),each=n/5)
+MoreCats = rep(c("a1","a2","a6","a4","a5","a6","a3","a8","a9","a2"),each=n/10)
+Data2use = data.frame(Xthing=x,Ything=y, Zthing=z, Cats = Categors,MoreCats= MoreCats)
+```
+
+```{r}
+plot(Data2use$Xthing, Data2use$Ything, type="p")
+plot(Data2use$Xthing,Data2use$Ything,col=Data2use$Cats) #fails,how to fix?
+plot(Data2use$Xthing,Data2use$Ything,col=factor(Data2use$Cats)) #works now
+legend("topleft",c("A","B","C","D","E"),pch = 1,col = 1:5) #is this legend right?
+
+```
+
+# GGplot
+```{r}
+#install.packages("tidyverse")
+library(tidyverse)
+ggplot(Data2use, aes(x=Xthing,y=Ything))+geom_point()
+ggplot(Data2use, aes(x=Xthing,y=Ything, colour = Cats))+
+geom_point()
+```
+
+
+
+## References:
+https://r4ds.had.co.nz/data-visualisation.html
+
+The template:
+ggplot(data = <DATA>) +
+<GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
+
+Can be generalized to more overplayed plot types:
+
+ggplot(data = <DATA>) +
+<GEOM_FUNCTION1>(mapping = aes(<MAPPINGS1>))+
+<GEOM_FUNCTION2>(mapping = aes(<MAPPINGS2>))
+
+# Plot types
+https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf
+
+```{r}
+ggplot(Data2use, aes(x=Xthing,y=Ything))+
+geom_point()
+ggplot(Data2use, aes( y=Ything ))+
+geom_boxplot()
+ggplot(Data2use, aes( y=Ything ))+
+geom_density()
+```
+##Combine plot types
+**Loess** = locally weighted regression:
+Typically fits weighted regression over a very fine grid
+```{r}
+ggplot(Data2use, aes(x=Xthing,y=Ything))+
+geom_point()+
+geom_smooth()
+
+ggplot(Data2use, aes(x=Xthing,y=Ything,colour=Cats))+
+geom_point()+
+geom_smooth(formula = y~x)
+ggplot(Data2use, aes(x=Xthing,y=Ything))+
+geom_point(aes(colour=Cats))+
+geom_smooth(formula = y~x)
+```
+# Exercises from the textbook
+• Hadley Wickham and Garrett Grolemund "R for Data Science", OReilly books:
+https://r4ds.had.co.nz (online 3.2.4)
+• Run ggplot(data = mpg). What do you see?
+Answer: Just a plot window
+```{r}
+ggplot(data = mpg)
+```
+• How many rows are in mpg? How many columns?
+```{r}
+dim(mpg)# gives the dimession of the dataframe 234 rows (observations) and 11 columns (variables)
+str(mpg)# gives the structure of the dataframe
+```
+• What does the drv variable describe? Read the help for ?mpg to find out.
+Answer: 
+drv variable is a character variable, 
+drv -> the type of drive train, where f = front-wheel drive, r = rear wheel drive, 4 = 4wd
+```{r}
+?mpg
+```
+
+• Make a scatterplot of hwy vs cyl.
+```{r}
+ggplot(mpg,aes(x=cyl,y=hwy))+
+         geom_point()
+```
+
+• What happens if you make a scatterplot of class vs drv? Why is the plot not
+useful?
+Answer: we can not clearly understand the number of observations for each combinations of class and drv categories (we have two categorical variables) 
+```{r}
+ggplot(mpg,aes(x=class,y=drv))+
+         geom_point()
+```
+# Jittering
+helps us to better view the situation when dealing with categorical variables
+
+```{r}
+ggplot(Data2use,aes(x=Cats,y=Ything))+
+geom_point()+
+theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+ggplot(Data2use,aes(x=Cats,y=Ything))+
+geom_jitter()+
+theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+# Multivariate data
+```{r}
+ggplot(Data2use, aes(x=Xthing,y=Ything, shape = Cats, colour = MoreCats))+
+geom_point()
+
+ggplot(Data2use, aes(x=Xthing,y=Ything, colour = Cats, alpha = Zthing))+
+geom_point()
+```
+
+# Facets
+Subplotting
+• 
+```{r}
+ggplot(Data2use,aes(x=Xthing,y=Ything))+
+geom_point()+
+facet_wrap( ~Cats)
+
+ggplot(Data2use,aes(x=Xthing,y=Ything))+
+geom_point()+
+facet_wrap( MoreCats~Cats)
+```
